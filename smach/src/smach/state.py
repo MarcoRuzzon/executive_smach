@@ -99,9 +99,12 @@ class State(object):
         return tuple(self._output_keys)
 
     ### Preemption interface
-    def request_preempt(self):
+    def request_preempt(self, value=1):
         """Sets preempt_requested to True"""
-        self._preempt_requested = True
+        if not value:
+            raise AttributeError
+
+        self._preempt_requested = value
 
     def service_preempt(self):
         """Sets preempt_requested to False"""

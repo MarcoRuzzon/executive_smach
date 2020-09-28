@@ -312,10 +312,10 @@ class Concurrence(smach.container.Container):
 
         return outcome
 
-    def request_preempt(self):
+    def request_preempt(self, value=1):
         """Preempt all contained states."""
         # Set preempt flag
-        smach.State.request_preempt(self)
+        smach.State.request_preempt(value)
 
         # Notify concurrence that it should preempt running states and terminate
         with self._done_cond:

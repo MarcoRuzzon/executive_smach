@@ -191,10 +191,10 @@ class Iterator(smach.container.Container):
 
         return outcome
 
-    def request_preempt(self):
-        self._preempt_requested = True
+    def request_preempt(self, value=1):
+        self._preempt_requested = value
         if self._is_running:
-            self._state.request_preempt()
+            self._state.request_preempt(value)
     
     ### Container interface
     def get_children(self):

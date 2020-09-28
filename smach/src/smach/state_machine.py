@@ -226,7 +226,7 @@ class StateMachine(smach.container.Container):
                     smach.loginfo("Last state '%s' did not service preempt. Preempting next state '%s' before executing..." % (self._preempted_label, self._current_label))
                     # The flag was not reset, so we need to keep preempting 
                     # (this will reset the current preempt)
-                    self._preempt_current_state()
+                    self._preempt_current_state(self._preempt_requested)
                 else:
                     # The flag was reset, so the container can reset
                     self._preempt_requested = False
@@ -367,19 +367,19 @@ class StateMachine(smach.container.Container):
         return container_outcome
 
     ## Preemption management
-    def request_preempt(self):
+    def request_preempt(self, value=1):
         """Propagate preempt to currently active state.
         
         This will attempt to preempt the currently active state.
         """
         with self._state_transitioning_lock:
             # Aleways Set this container's preempted flag
-            self._preempt_requested = True
+            self._preempt_requested = value
             # Only propagate preempt if the current state is defined
             if self._current_state is not None:
-                self._preempt_current_state()
+                self._preempt_current_state(value)
 
-    def _preempt_current_state(self):
+    def _preempt_current_state(self, value=1):
         """Preempt the current state (might not be executing yet).
         This also resets the preempt flag on a state that had previously received the preempt, but not serviced it."""
         if self._preempted_state != self._current_state:
@@ -393,7 +393,7 @@ class StateMachine(smach.container.Container):
 
             # Request the currently active state to preempt
             try:
-                self._preempted_state.request_preempt()
+                self._preempted_state.request_preempt(value)
             except:
                 smach.logerr("Failed to preempt contained state '%s': %s" % (self._preempted_label, traceback.format_exc()))
 
